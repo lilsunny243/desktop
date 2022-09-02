@@ -24,10 +24,12 @@ import {
   getWorkingDirectoryImage,
   getBlobImage,
   getBinaryPaths,
+  getBranchMergeBaseChangedFiles,
 } from '../../../src/lib/git'
 import { getStatusOrThrow } from '../../helpers/status'
 
 import { GitProcess } from 'dugite'
+import { makeCommit, switchTo } from '../../helpers/repository-scaffolding'
 
 async function getTextDiff(
   repo: Repository,
@@ -528,6 +530,50 @@ describe('git/diff', () => {
         modifiedChanges: true,
         untrackedChanges: true,
       })
+    })
+  })
+
+  describe('getBranchMergeBaseChangedFiles', () => {
+    it('loads the files changed between two branches if merged', async () => {
+      // create feature branch from initial master commit
+      await GitProcess.exec(['branch', 'feature-branch'], repository.path)
+
+      // Add foo.md to master
+      const firstCommit = {
+        entries: [{ path: 'foo.md', contents: 'foo' }],
+      }
+      await makeCommit(repository, firstCommit)
+
+      // switch to the feature branch and add feature.md and add foo.md
+      await switchTo(repository, 'feature-branch')
+      await makeCommit(repository, firstCommit)
+      const secondCommit = {
+        entries: [{ path: 'feature.md', contents: 'feature' }],
+      }
+      await makeCommit(repository, secondCommit)
+
+      // merge master into feature.md
+      await GitProcess.exec(['merge', 'master'], repository.path)
+
+      /*
+        Now `feature-branch` has 3 commits:
+        1) adding 'feature.md',
+        2) adding 'foo.md', and the
+        3) the merge commit.
+
+        A merge-base comparison between these two branches would show having
+        three commits but will only list 'feature.md' since 'foo.md' exists
+        on both `master` and `feature-branch`.
+      */
+
+      const changesetData = await getBranchMergeBaseChangedFiles(
+        repository,
+        'master',
+        'feature-branch',
+        'irrelevantToTest'
+      )
+      expect(changesetData.files).toHaveLength(1)
+      expect(changesetData.files[0].path).toBe('feature.md')
     })
   })
 })
