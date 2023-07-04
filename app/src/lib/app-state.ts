@@ -31,11 +31,7 @@ import { SignInState } from './stores/sign-in-store'
 import { WindowState } from './window-state'
 import { Shell } from './shells'
 
-import {
-  ApplicableTheme,
-  ApplicationTheme,
-  ICustomTheme,
-} from '../ui/lib/application-theme'
+import { ApplicableTheme, ApplicationTheme } from '../ui/lib/application-theme'
 import { IAccountRepositories } from './stores/api-repositories-store'
 import { ManualConflictResolution } from '../models/manual-conflict-resolution'
 import { Banner } from '../models/banner'
@@ -214,6 +210,9 @@ export interface IAppState {
   /** Should the app prompt the user to confirm a discard stash */
   readonly askForConfirmationOnDiscardStash: boolean
 
+  /** Should the app prompt the user to confirm a commit checkout? */
+  readonly askForConfirmationOnCheckoutCommit: boolean
+
   /** Should the app prompt the user to confirm a force push? */
   readonly askForConfirmationOnForcePush: boolean
 
@@ -270,9 +269,6 @@ export interface IAppState {
 
   /** The selected appearance (aka theme) preference */
   readonly selectedTheme: ApplicationTheme
-
-  /** The custom theme  */
-  readonly customTheme?: ICustomTheme
 
   /** The currently applied appearance (aka theme) */
   readonly currentTheme: ApplicableTheme

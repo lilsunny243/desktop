@@ -89,7 +89,7 @@ import {
 import { TipState, IValidBranch } from '../../models/tip'
 import { Banner, BannerType } from '../../models/banner'
 
-import { ApplicationTheme, ICustomTheme } from '../lib/application-theme'
+import { ApplicationTheme } from '../lib/application-theme'
 import { installCLI } from '../lib/install-cli'
 import {
   executeMenuItem,
@@ -692,6 +692,14 @@ export class Dispatcher {
     strategy?: UncommittedChangesStrategy
   ): Promise<Repository> {
     return this.appStore._checkoutBranch(repository, branch, strategy)
+  }
+
+  /** Check out the given commit. */
+  public checkoutCommit(
+    repository: Repository,
+    commit: CommitOneLine
+  ): Promise<Repository> {
+    return this.appStore._checkoutCommit(repository, commit)
   }
 
   /** Push the current branch. */
@@ -2374,6 +2382,10 @@ export class Dispatcher {
     return this.appStore._setConfirmDiscardStashSetting(value)
   }
 
+  public setConfirmCheckoutCommitSetting(value: boolean) {
+    return this.appStore._setConfirmCheckoutCommitSetting(value)
+  }
+
   public setConfirmForcePushSetting(value: boolean) {
     return this.appStore._setConfirmForcePushSetting(value)
   }
@@ -2447,13 +2459,6 @@ export class Dispatcher {
    */
   public setSelectedTheme(theme: ApplicationTheme) {
     return this.appStore._setSelectedTheme(theme)
-  }
-
-  /**
-   * Set the custom application-wide theme
-   */
-  public setCustomTheme(theme: ICustomTheme) {
-    return this.appStore._setCustomTheme(theme)
   }
 
   /**
@@ -3502,6 +3507,7 @@ export class Dispatcher {
       tip.branch.tip.sha
     )
 
+    this.closePopup(PopupType.CommitMessage)
     this.showPopup({
       type: PopupType.MultiCommitOperation,
       repository,

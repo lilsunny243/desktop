@@ -51,6 +51,7 @@ interface IRepositoryViewProps {
   readonly showSideBySideDiff: boolean
   readonly askForConfirmationOnDiscardChanges: boolean
   readonly askForConfirmationOnDiscardStash: boolean
+  readonly askForConfirmationOnCheckoutCommit: boolean
   readonly focusCommitMessage: boolean
   readonly commitSpellcheckEnabled: boolean
   readonly accounts: ReadonlyArray<Account>
@@ -177,12 +178,12 @@ export class RepositoryView extends React.Component<
 
     return (
       <TabBar selectedIndex={selectedTab} onTabClicked={this.onTabClicked}>
-        <span className="with-indicator">
+        <span className="with-indicator" id="changes-tab">
           <span>Changes</span>
           {this.renderChangesBadge()}
         </span>
 
-        <div className="with-indicator">
+        <div className="with-indicator" id="history-tab">
           <span>History</span>
         </div>
       </TabBar>
@@ -299,6 +300,9 @@ export class RepositoryView extends React.Component<
         tagsToPush={tagsToPush}
         aheadBehindStore={aheadBehindStore}
         isMultiCommitOperationInProgress={mcos !== null}
+        askForConfirmationOnCheckoutCommit={
+          this.props.askForConfirmationOnCheckoutCommit
+        }
       />
     )
   }
@@ -380,6 +384,7 @@ export class RepositoryView extends React.Component<
           onOpenSubmodule={this.onOpenSubmodule}
           onChangeImageDiffType={this.onChangeImageDiffType}
           onHideWhitespaceInDiffChanged={this.onHideWhitespaceInDiffChanged}
+          onOpenInExternalEditor={this.props.onOpenInExternalEditor}
         />
       )
     }
@@ -519,6 +524,7 @@ export class RepositoryView extends React.Component<
             this.props.askForConfirmationOnDiscardChanges
           }
           onDiffOptionsOpened={this.onDiffOptionsOpened}
+          onOpenInExternalEditor={this.props.onOpenInExternalEditor}
         />
       )
     }
