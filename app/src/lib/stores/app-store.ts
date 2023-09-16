@@ -100,6 +100,7 @@ import {
   getEndpointForRepository,
   IAPIFullRepository,
   IAPIComment,
+  IAPIRepoRuleset,
 } from '../api'
 import { shell } from '../app-shell'
 import {
@@ -324,6 +325,8 @@ import { determineMergeability } from '../git/merge-tree'
 import { PopupManager } from '../popup-manager'
 import { resizableComponentClass } from '../../ui/resizable'
 import { compare } from '../compare'
+import { parseRepoRules, useRepoRulesLogic } from '../helpers/repo-rules'
+import { RepoRulesInfo } from '../../models/repo-rules'
 
 const LastSelectedRepositoryIDKey = 'last-selected-repository-id'
 
@@ -529,6 +532,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
   private pullRequestSuggestedNextAction:
     | PullRequestSuggestedNextAction
     | undefined = undefined
+
+  private cachedRepoRulesets = new Map<number, IAPIRepoRuleset>()
 
   public constructor(
     private readonly gitHubUserStore: GitHubUserStore,
@@ -999,6 +1004,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       notificationsEnabled: getNotificationsEnabled(),
       pullRequestSuggestedNextAction: this.pullRequestSuggestedNextAction,
       resizablePaneActive: this.resizablePaneActive,
+      cachedRepoRulesets: this.cachedRepoRulesets,
     }
   }
 
@@ -1116,6 +1122,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
   private clearBranchProtectionState(repository: Repository) {
     this.repositoryStateCache.updateChangesState(repository, () => ({
       currentBranchProtected: false,
+      currentRepoRulesInfo: new RepoRulesInfo(),
     }))
     this.emitUpdate()
   }
@@ -1147,6 +1154,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       if (!hasWritePermission(gitHubRepo)) {
         this.repositoryStateCache.updateChangesState(repository, () => ({
           currentBranchProtected: false,
+          currentRepoRulesInfo: new RepoRulesInfo(),
         }))
         this.emitUpdate()
         return
@@ -1159,10 +1167,58 @@ export class AppStore extends TypedBaseStore<IAppState> {
       const pushControl = await api.fetchPushControl(owner, name, branchName)
       const currentBranchProtected = !isBranchPushable(pushControl)
 
+      let currentRepoRulesInfo = new RepoRulesInfo()
+      if (useRepoRulesLogic(account, repository)) {
+        const slimRulesets = await api.fetchAllRepoRulesets(owner, name)
+
+        // ultimate goal here is to fetch all rulesets that apply to the repo
+        // so they're already cached when needed later on
+        if (slimRulesets?.length) {
+          const rulesetIds = slimRulesets.map(r => r.id)
+
+          const calls: Promise<IAPIRepoRuleset | null>[] = []
+          for (const id of rulesetIds) {
+            // check the cache and don't re-query any that are already in there
+            if (!this.cachedRepoRulesets.has(id)) {
+              calls.push(api.fetchRepoRuleset(owner, name, id))
+            }
+          }
+
+          if (calls.length > 0) {
+            const rulesets = await Promise.all(calls)
+            this._updateCachedRepoRulesets(rulesets)
+          }
+        }
+
+        const branchRules = await api.fetchRepoRulesForBranch(
+          owner,
+          name,
+          branchName
+        )
+
+        if (branchRules.length > 0) {
+          currentRepoRulesInfo = await parseRepoRules(
+            branchRules,
+            this.cachedRepoRulesets,
+            repository
+          )
+        }
+      }
+
       this.repositoryStateCache.updateChangesState(repository, () => ({
         currentBranchProtected,
+        currentRepoRulesInfo,
       }))
       this.emitUpdate()
+    }
+  }
+
+  /** This shouldn't be called directly. See `Dispatcher`. */
+  public _updateCachedRepoRulesets(rulesets: Array<IAPIRepoRuleset | null>) {
+    for (const rs of rulesets) {
+      if (rs !== null) {
+        this.cachedRepoRulesets.set(rs.id, rs)
+      }
     }
   }
 
@@ -2601,6 +2657,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
       assertNever(conflictState, `Unsupported conflict kind`)
     }
 
+    this.statsStore.recordMergeConflictFromExplicitMerge()
+
     this._setMultiCommitOperationStep(repository, {
       kind: MultiCommitOperationStepKind.ShowConflicts,
       conflictState: {
@@ -2673,7 +2731,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
   /** This shouldn't be called directly. See `Dispatcher`. */
   public async _changeRepositorySection(
     repository: Repository,
-    selectedSection: RepositorySectionTab
+    selectedSection: RepositorySectionTab,
+    forceButtonFocus: boolean = false
   ): Promise<void> {
     this.repositoryStateCache.update(repository, state => {
       if (state.selectedSection !== selectedSection) {
@@ -2684,12 +2743,20 @@ export class AppStore extends TypedBaseStore<IAppState> {
     this.emitUpdate()
 
     if (selectedSection === RepositorySectionTab.History) {
-      return this.refreshHistorySection(repository)
+      await this.refreshHistorySection(repository)
     } else if (selectedSection === RepositorySectionTab.Changes) {
-      return this.refreshChangesSection(repository, {
+      await this.refreshChangesSection(repository, {
         includingStatus: true,
         clearPartialState: false,
       })
+    }
+
+    if (forceButtonFocus) {
+      const repoSideBar = document.getElementById('repository-sidebar')
+      const button = repoSideBar?.querySelector(
+        '.tab-bar-item.selected'
+      ) as HTMLButtonElement
+      button?.focus()
     }
   }
 
@@ -4771,7 +4838,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
     // Make sure we show the changes after undoing the commit
     await this._changeRepositorySection(
       repository,
-      RepositorySectionTab.Changes
+      RepositorySectionTab.Changes,
+      true
     )
 
     await gitStore.undoCommit(commit)
@@ -6525,10 +6593,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
   /** This shouldn't be called directly. See `Dispatcher`. */
   public async _popStashEntry(repository: Repository, stashEntry: IStashEntry) {
-    const gitStore = this.gitStoreCache.get(repository)
-    await gitStore.performFailableOperation(() => {
-      return popStashEntry(repository, stashEntry.stashSha)
-    })
+    await popStashEntry(repository, stashEntry.stashSha)
     log.info(
       `[AppStore. _popStashEntry] popped stash with commit id ${stashEntry.stashSha}`
     )
