@@ -46,7 +46,7 @@ export function enableWSLDetection(): boolean {
  * Should we use the new diff viewer for unified diffs?
  */
 export function enableExperimentalDiffViewer(): boolean {
-  return enableBetaFeatures()
+  return true
 }
 
 /**
@@ -78,11 +78,6 @@ export function enableCheckoutCommit(): boolean {
   return true
 }
 
-/** Should ci check runs show logs? */
-export function enableCICheckRunsLogs(): boolean {
-  return false
-}
-
 /** Should we show previous tags as suggestions? */
 export function enablePreviousTagSuggestions(): boolean {
   return enableBetaFeatures()
@@ -100,7 +95,13 @@ export function enableMoveStash(): boolean {
 export const enableCustomGitUserAgent = enableBetaFeatures
 
 export function enableSectionList(): boolean {
-  return enableBetaFeatures()
+  return true
 }
 
 export const enableRepoRulesBeta = () => true
+
+export const enableCommitDetailsHeaderExpansion = () => true
+
+export const enableDiffCheckMarksAndLinkUnderlines = enableBetaFeatures
+
+export const enableDiffCheckMarks = enableDiffCheckMarksAndLinkUnderlines

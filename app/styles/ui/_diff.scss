@@ -728,6 +728,12 @@
     color: var(--syntax-header-color);
   }
 
+  .cm-m-cmake {
+    &.cm-def {
+      color: var(--syntax-atom-color);
+    }
+  }
+
   .cm-m-css {
     &.cm-property {
       color: var(--syntax-atom-color);
@@ -796,7 +802,7 @@
     pointer-events: none;
   }
 
-  .hidden-bidi-chars-warning {
+  .diff-contents-warning-container {
     background-color: var(--file-warning-background-color);
     padding: var(--spacing) var(--spacing-double);
     border-bottom: var(--file-warning-border-color) solid 1px;
@@ -809,6 +815,13 @@
 
     a.link-button-component {
       display: unset;
+    }
+
+    // Separate warning items
+    .diff-contents-warning:not(:last-child) {
+      margin-bottom: var(--spacing);
+      border-bottom: var(--file-warning-border-color) solid 1px;
+      padding-bottom: var(--spacing);
     }
   }
 
@@ -847,6 +860,64 @@
       & > :not(.loading-indicator) {
         opacity: 0.2;
       }
+    }
+  }
+
+  // When focus moves to the virtualized grid, we want to show a focus ring.
+  &:has(.ReactVirtualized__Grid:focus-visible) {
+    outline: 2px solid var(--focus-color);
+    border-radius: var(--border-radius);
+
+    // Move the content over to make room for the focus ring
+    margin-right: 2px;
+    margin-bottom: 2px;
+  }
+}
+
+.diff-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  max-height: 100%;
+
+  .header {
+    span {
+      user-select: text;
+    }
+
+    background: var(--box-alt-background-color);
+    border-bottom: 1px solid var(--diff-border-color);
+
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    flex-grow: 0;
+    align-items: center;
+
+    padding: var(--spacing-half) var(--spacing);
+
+    @include octicon-status;
+
+    .diff-options-component {
+      margin-right: var(--spacing-half);
+      flex-shrink: 0;
+    }
+
+    .octicon.status {
+      flex-shrink: 0;
+      vertical-align: text-bottom;
+      position: relative;
+      align-self: center;
+      flex-shrink: 0;
+    }
+
+    .line-endings {
+      margin-right: var(--spacing-half);
+    }
+
+    .open-merge-tool {
+      margin-right: var(--spacing-half);
     }
   }
 }

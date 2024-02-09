@@ -35,10 +35,13 @@ import { IConstrainedValue } from '../../lib/app-state'
 import { clamp } from '../../lib/clamp'
 import { pathExists } from '../lib/path-exists'
 import { UnreachableCommitsTab } from './unreachable-commits-dialog'
+import { enableCommitDetailsHeaderExpansion } from '../../lib/feature-flag'
+import { ExpandableCommitSummary } from './expandable-commit-summary'
+import { DiffHeader } from '../diff/diff-header'
+import { Account } from '../../models/account'
 
 interface ISelectedCommitsProps {
   readonly repository: Repository
-  readonly isLocalRepository: boolean
   readonly dispatcher: Dispatcher
   readonly emoji: Map<string, string>
   readonly selectedCommits: ReadonlyArray<Commit>
@@ -87,6 +90,8 @@ interface ISelectedCommitsProps {
 
   /** Whether or not the selection of commits is contiguous */
   readonly isContiguous: boolean
+
+  readonly accounts: ReadonlyArray<Account>
 }
 
 interface ISelectedCommitsState {
@@ -159,23 +164,66 @@ export class SelectedCommits extends React.Component<
     }
 
     return (
-      <SeamlessDiffSwitcher
-        repository={this.props.repository}
-        imageDiffType={this.props.selectedDiffType}
-        file={file}
-        diff={diff}
-        readOnly={true}
-        hideWhitespaceInDiff={this.props.hideWhitespaceInDiff}
+      <div className="diff-container">
+        {this.renderDiffHeader()}
+        <SeamlessDiffSwitcher
+          repository={this.props.repository}
+          imageDiffType={this.props.selectedDiffType}
+          file={file}
+          diff={diff}
+          readOnly={true}
+          hideWhitespaceInDiff={this.props.hideWhitespaceInDiff}
+          showDiffCheckMarks={false}
+          showSideBySideDiff={this.props.showSideBySideDiff}
+          onOpenBinaryFile={this.props.onOpenBinaryFile}
+          onChangeImageDiffType={this.props.onChangeImageDiffType}
+          onHideWhitespaceInDiffChanged={this.onHideWhitespaceInDiffChanged}
+          onOpenSubmodule={this.props.onOpenSubmodule}
+        />
+      </div>
+    )
+  }
+
+  private renderDiffHeader() {
+    const { selectedFile } = this.props
+    if (selectedFile === null || !enableCommitDetailsHeaderExpansion()) {
+      return null
+    }
+
+    const { path, status } = selectedFile
+
+    return (
+      <DiffHeader
+        diff={this.props.currentDiff}
+        path={path}
+        status={status}
         showSideBySideDiff={this.props.showSideBySideDiff}
-        onOpenBinaryFile={this.props.onOpenBinaryFile}
-        onChangeImageDiffType={this.props.onChangeImageDiffType}
+        onShowSideBySideDiffChanged={this.onShowSideBySideDiffChanged}
+        hideWhitespaceInDiff={this.props.hideWhitespaceInDiff}
         onHideWhitespaceInDiffChanged={this.onHideWhitespaceInDiffChanged}
-        onOpenSubmodule={this.props.onOpenSubmodule}
+        onDiffOptionsOpened={this.props.onDiffOptionsOpened}
       />
     )
   }
 
   private renderCommitSummary(commits: ReadonlyArray<Commit>) {
+    if (enableCommitDetailsHeaderExpansion()) {
+      return (
+        <ExpandableCommitSummary
+          selectedCommits={commits}
+          shasInDiff={this.props.shasInDiff}
+          changesetData={this.props.changesetData}
+          emoji={this.props.emoji}
+          repository={this.props.repository}
+          onExpandChanged={this.onExpandChanged}
+          isExpanded={this.state.isExpanded}
+          onDescriptionBottomChanged={this.onDescriptionBottomChanged}
+          onHighlightShas={this.onHighlightShas}
+          showUnreachableCommits={this.showUnreachableCommits}
+          accounts={this.props.accounts}
+        />
+      )
+    }
     return (
       <CommitSummary
         selectedCommits={commits}
@@ -194,6 +242,7 @@ export class SelectedCommits extends React.Component<
         onDiffOptionsOpened={this.props.onDiffOptionsOpened}
         onHighlightShas={this.onHighlightShas}
         showUnreachableCommits={this.showUnreachableCommits}
+        accounts={this.props.accounts}
       />
     )
   }
@@ -252,14 +301,31 @@ export class SelectedCommits extends React.Component<
     const availableWidth = clamp(this.props.commitSummaryWidth) - 1
 
     return (
-      <FileList
-        files={files}
-        onSelectedFileChanged={this.onFileSelected}
-        selectedFile={this.props.selectedFile}
-        availableWidth={availableWidth}
-        onContextMenu={this.onContextMenu}
-        onRowDoubleClick={this.onRowDoubleClick}
-      />
+      <>
+        {this.renderFileHeader()}
+        <FileList
+          files={files}
+          onSelectedFileChanged={this.onFileSelected}
+          selectedFile={this.props.selectedFile}
+          availableWidth={availableWidth}
+          onContextMenu={this.onContextMenu}
+          onRowDoubleClick={this.onRowDoubleClick}
+        />
+      </>
+    )
+  }
+
+  private renderFileHeader() {
+    if (!enableCommitDetailsHeaderExpansion()) {
+      return null
+    }
+
+    const fileCount = this.props.changesetData.files.length
+    const filesPlural = fileCount === 1 ? 'file' : 'files'
+    return (
+      <div className="file-list-header">
+        {fileCount} changed {filesPlural}
+      </div>
     )
   }
 

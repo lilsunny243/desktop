@@ -146,7 +146,7 @@ interface IAutocompletingTextInputState<T> {
 /** A text area which provides autocompletions as the user types. */
 export abstract class AutocompletingTextInput<
   ElementType extends HTMLInputElement | HTMLTextAreaElement,
-  AutocompleteItemType extends Object
+  AutocompleteItemType extends object
 > extends React.Component<
   IAutocompletingTextInputProps<ElementType, AutocompleteItemType>,
   IAutocompletingTextInputState<AutocompleteItemType>
@@ -235,9 +235,9 @@ export abstract class AutocompletingTextInput<
       return null
     }
 
-    const selectedRow = state.selectedItem
-      ? items.indexOf(state.selectedItem)
-      : -1
+    const selectedRows = state.selectedItem
+      ? [items.indexOf(state.selectedItem)]
+      : []
 
     // The height needed to accommodate all the matched items without overflowing
     //
@@ -273,9 +273,9 @@ export abstract class AutocompletingTextInput<
           rowCount={items.length}
           rowHeight={RowHeight}
           rowId={this.getRowId}
-          selectedRows={[selectedRow]}
+          selectedRows={selectedRows}
           rowRenderer={this.renderItem}
-          scrollToRow={selectedRow}
+          scrollToRow={selectedRows.at(0)}
           onRowMouseDown={this.onRowMouseDown}
           onRowClick={this.insertCompletionOnClick}
           onSelectedRowChanged={this.onSelectedRowChanged}
@@ -400,6 +400,7 @@ export abstract class AutocompletingTextInput<
       value: this.props.value,
       ref: this.onRef,
       onChange: this.onChange,
+      onScroll: this.onScroll,
       onKeyDown: this.onKeyDown,
       onFocus: this.onFocus,
       onBlur: this.onBlur,
@@ -422,6 +423,11 @@ export abstract class AutocompletingTextInput<
     )
   }
 
+  // This will update the caret coordinates in the componen state, so that the
+  // "invisible caret" can be positioned correctly.
+  // Given the outcome of this function depends on both the caret coordinates
+  // and the scroll position, it should be called whenever the caret moves (on
+  // text changes) or the scroll position changes.
   private updateCaretCoordinates = () => {
     const element = this.element
     if (!element) {
@@ -713,6 +719,10 @@ export abstract class AutocompletingTextInput<
 
   private buildAutocompleteListRowIdPrefix() {
     return new Date().getTime().toString()
+  }
+
+  private onScroll = () => {
+    this.updateCaretCoordinates()
   }
 
   private onChange = async (event: React.FormEvent<ElementType>) => {

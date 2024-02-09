@@ -3,11 +3,10 @@ import { PathLabel } from '../lib/path-label'
 import { AppFileStatus } from '../../models/status'
 import { IDiff, DiffType } from '../../models/diff'
 import { Octicon, iconForStatus } from '../octicons'
-import * as OcticonSymbol from '../octicons/octicons.generated'
 import { mapStatus } from '../../lib/status'
-import { DiffOptions } from '../diff/diff-options'
+import { DiffOptions } from './diff-options'
 
-interface IChangedFileDetailsProps {
+interface IDiffHeaderProps {
   readonly path: string
   readonly status: AppFileStatus
   readonly diff: IDiff | null
@@ -29,10 +28,7 @@ interface IChangedFileDetailsProps {
 }
 
 /** Displays information about a file */
-export class ChangedFileDetails extends React.Component<
-  IChangedFileDetailsProps,
-  {}
-> {
+export class DiffHeader extends React.Component<IDiffHeaderProps, {}> {
   public render() {
     const status = this.props.status
     const fileStatus = mapStatus(status)
@@ -40,7 +36,6 @@ export class ChangedFileDetails extends React.Component<
     return (
       <div className="header">
         <PathLabel path={this.props.path} status={this.props.status} />
-        {this.renderDecorator()}
 
         {this.renderDiffOptions()}
 
@@ -70,26 +65,5 @@ export class ChangedFileDetails extends React.Component<
         onDiffOptionsOpened={this.props.onDiffOptionsOpened}
       />
     )
-  }
-
-  private renderDecorator() {
-    const diff = this.props.diff
-
-    if (diff === null) {
-      return null
-    }
-
-    if (diff.kind === DiffType.Text && diff.lineEndingsChange) {
-      const message = `Warning: line endings will be changed from '${diff.lineEndingsChange.from}' to '${diff.lineEndingsChange.to}'.`
-      return (
-        <Octicon
-          symbol={OcticonSymbol.alert}
-          className={'line-endings'}
-          title={message}
-        />
-      )
-    } else {
-      return null
-    }
   }
 }

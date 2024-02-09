@@ -15,11 +15,12 @@ import { DiffOptions } from '../diff/diff-options'
 import { IChangesetData } from '../../lib/git'
 import { TooltippedContent } from '../lib/tooltipped-content'
 import { AppFileStatusKind } from '../../models/status'
-import _ from 'lodash'
+import uniqWith from 'lodash/uniqWith'
 import { LinkButton } from '../lib/link-button'
 import { UnreachableCommitsTab } from './unreachable-commits-dialog'
 import { TooltippedCommitSHA } from '../lib/tooltipped-commit-sha'
 import memoizeOne from 'memoize-one'
+import { Account } from '../../models/account'
 
 interface ICommitSummaryProps {
   readonly repository: Repository
@@ -60,6 +61,8 @@ interface ICommitSummaryProps {
 
   /** Called to show unreachable commits dialog */
   readonly showUnreachableCommits: (tab: UnreachableCommitsTab) => void
+
+  readonly accounts: ReadonlyArray<Account>
 }
 
 interface ICommitSummaryState {
@@ -128,7 +131,7 @@ function createState(
     getAvatarUsersForCommit(repository.gitHubRepository, c)
   )
 
-  const avatarUsers = _.uniqWith(
+  const avatarUsers = uniqWith(
     allAvatarUsers,
     (a, b) => a.email === b.email && a.name === b.name
   )
@@ -400,7 +403,7 @@ export class CommitSummary extends React.Component<
   }
 
   private renderAuthors = () => {
-    const { selectedCommits, repository } = this.props
+    const { selectedCommits, repository, accounts } = this.props
     const { avatarUsers } = this.state
     if (selectedCommits.length > 1) {
       return
@@ -408,7 +411,7 @@ export class CommitSummary extends React.Component<
 
     return (
       <li className="commit-summary-meta-item without-truncation">
-        <AvatarStack users={avatarUsers} />
+        <AvatarStack users={avatarUsers} accounts={accounts} />
         <CommitAttribution
           gitHubRepository={repository.gitHubRepository}
           commits={selectedCommits}
