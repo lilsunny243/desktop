@@ -1,5 +1,170 @@
 {
   "releases": {
+    "3.3.19-beta1": [
+      "[Fixed] Clear stored credentials when authentication fails on insecure http hosts - #18588"
+    ],
+    "3.3.18": [
+      "[Fixed] Prevent Pull Request comment or review dialog from moving constantly under some circumstances - #18596",
+      "[Fixed] Prevent Pull Request notification dialogs from truncating long Pull Request titles - #18596",
+      "[Fixed] The welcome start flow content does not overlap or clip when zoomed - #18565",
+      "[Fixed] Clear stored credentials when authentication fails on insecure http hosts - #18588",
+      "[Improved] Improved accessibility of checks failed notification dialog by moving \"Re-run checks\" button out of the heading element - #18596",
+      "[Improved] Upgrade embedded Git to v2.43.4 on macOS, and to v2.43.4.windows.1 on Windows"
+    ],
+    "3.3.18-beta3": [
+      "[Improved] Upgrade embedded Git to v2.43.4 on macOS, and to v2.43.4.windows.1 on Windows",
+      "[Removed] Clear stored credentials when authentication fails on insecure http hosts - #18588"
+    ],
+    "3.3.18-beta2": [
+      "[Fixed] Prevent Pull Request comment or review dialog from moving constantly under some circumstances - #18596",
+      "[Fixed] Prevent Pull Request notification dialogs from truncating long Pull Request titles - #18596",
+      "[Fixed] The welcome start flow content does not overlap or clip when zoomed - #18565",
+      "[Improved] Improved accessibility of checks failed notification dialog by moving \"Re-run checks\" button out of the heading element - #18596"
+    ],
+    "3.3.18-beta1": [
+      "[Fixed] Clear stored credentials when authentication fails on insecure http hosts - #18588"
+    ],
+    "3.3.17": [
+      "[Fixed] Pushing and pulling repositories using Git LFS no longer causes an indefinite loop - #18582",
+      "[Improved] Improve the accessibility of the tabs in the preferences dialog for users of screen readers - #18567",
+      "[Improved] Always focus the first focusable element in the preferences dialog on open - #18567"
+    ],
+    "3.3.17-beta1": [
+      "[Fixed] Pushing and pulling repositories using Git LFS no longer causes an indefinite loop - #18582",
+      "[Improved] Improve the accessibility of the tabs in the preferences dialog for users of screen readers - #18567",
+      "[Improved] Always focus the first focusable element in the preferences dialog on open - #18567"
+    ],
+    "3.3.16": [
+      "[Fixed] Resolved auth failures when interacting with repositories hosted on non-GitHub hosts - #18568 #18570 #18569"
+    ],
+    "3.3.16-beta1": [
+      "[Fixed] Resolved auth failures when interacting with repositories hosted on non-GitHub hosts - #18568 #18570 #18569"
+    ],
+    "3.3.15": [
+      "[Added] The diff view now highlights Zig syntax - #17957. Thanks @imkylecat!",
+      "[Fixed] Bring back color to links in PR timeline - #18561",
+      "[Fixed] Remove unnecessary br elements to make the app easier to navigate with screen readers - #18444, #18436",
+      "[Fixed] Prevent clipping of dialog controls and content when app is zoomed - #18412",
+      "[Improved] Make sure the arrow path in a dropdown button can't receive focus - #18562",
+      "[Improved] Increase contrast on modified and conflicted octicons - #18560"
+    ],
+    "3.3.15-beta2": [
+      "[Fixed] Bring back color to links in PR timeline - #18561",
+      "[Improved] Make sure the arrow path in a dropdown button can't receive focus - #18562",
+      "[Improved] Increase contrast on modified and conflicted octicons - #18560",
+      "[Improved] Add banner to announce the accessibility settings - #18460"
+    ],
+    "3.3.15-beta1": [
+      "[New] Reset to a previous commit - #12393",
+      "[Added] The diff view now highlights Zig syntax - #17957. Thanks @imkylecat!",
+      "[Fixed] Remove unnecessary br elements to make the app easier to navigate with screen readers - #18444, #18436",
+      "[Fixed] Prevent clipping of dialog controls and content when app is zoomed - #18412"
+    ],
+    "3.3.14": [
+      "[Fixed] The tab panel semantics in the \"Publish Repository\" and \"Clone a Repository\" are announced by screen readers - #18408",
+      "[Fixed] The check all button in the diff always only represents one selectable group - #18422",
+      "[Fixed] Images diffs of less than 200px in width do not render with a zero width for diff views other than `2-up` - #18405",
+      "[Fixed] Fix list accessibility semantics of the Pull Request list - #18397",
+      "[Fixed] Fix screen reader support of warning dialogs - #18371",
+      "[Fixed] Selecting the \"Configure manually\" radio option does not cause unexpected focus shift to the name input in the Git Configuration page of the welcome flow - #18341",
+      "[Fixed] All dialogs can be closed by pressing Esc - #18335",
+      "[Improved] The force push warning in the push dropdown now has a contrast of 4.5:1 - #18415",
+      "[Improved] Hyphen replacement and invalid sanitized name warnings and errors in the create branch and create repository dialogs are associated to the input by the aria-describedby attribute - #18404",
+      "[Improved] Add VapourSynth script files (.vpy) to test/x-python - #18364. Thanks @couleurm!",
+      "[Improved] The text contrast of tutorial steps when closed is 4.5:1 - #18342",
+      "[Improved] Upgrade to Electron v28.2.3 - #18185",
+      "[Removed] Remove support for macOS 10.13 and 10.14 - #18316"
+    ],
+    "3.3.14-beta2": [
+      "[Fixed] The tab panel semantics in the \"Publish Repository\" and \"Clone a Repository\" are announced by screen readers - #18408",
+      "[Fixed] The check all button in the diff always only represents one selectable group - #18422",
+      "[Improved] The force push warning in the push dropdown now has a contrast of 4.5:1 - #18415"
+    ],
+    "3.3.14-beta1": [
+      "[Fixed] Images diffs of less than 200px in width do not render with a zero width for diff views other than `2-up` - #18405",
+      "[Fixed] Fix list accessibility semantics of the Pull Request list - #18397",
+      "[Fixed] Fix screen reader support of warning dialogs - #18371",
+      "[Fixed] Selecting the \"Configure manually\" radio option does not cause unexpected focus shift to the name input in the Git Configuration page of the welcome flow - #18341",
+      "[Fixed] All dialogs can be closed by pressing Esc - #18335",
+      "[Improved] Hypen replacement and invalid sanitized name warnings and errors in the create branch and create repository dialogs are associated to the input by the aria-describedby attribute - #18404",
+      "[Improved] Add VapourSynth script files (.vpy) to test/x-python - #18364. Thanks @couleurm!",
+      "[Improved] The text contrast of tutorial steps when closed is 4.5:1 - #18342"
+    ],
+    "3.3.13": [
+      "[Fixed] Fix layout issues in 2-up image diffing when images are too small - #18313",
+      "[Fixed] The \"Show whitespace changes?\" popover can be closed by pressing Escape - #18314",
+      "[Fixed] Added announcing the number of results to the diff search via screen readers - #18306",
+      "[Improved] Git errors due to bad config values are surfaced in the UI - #18230",
+      "[Improved] The pull request check run popover is now keyboard accessible - #18276",
+      "[Improved] The pull request check run popover button is now keyboard accessible - #18268",
+      "[Improved] Add the aria-label attribute to our markdown iframes to clarify their purpose to users of screen readers in browse mode.  - #18277",
+      "[Improved] Add support for newer versions of Alacritty shell - #16614. Thanks @lhvy!",
+      "[Improved] Upgrade embedded Git to v2.43.3 on macOS, and to v2.43.0.windows.1 on Windows, and Git LFS to v3.5.1 - #18292"
+    ],
+    "3.3.13-beta1": [
+      "[Fixed] Fix layout issues in 2-up image diffing when images are too small - #18313",
+      "[Fixed] The \"Show whitespace changes?\" popover can be closed by pressing Escape - #18314",
+      "[Removed] Remove support for macOS 10.13 and 10.14 - #18316"
+    ],
+    "3.3.12": [
+      "[Fixed] On Windows, PATH environment variable with values longer than 1024 are not truncated - #18244",
+      "[Improved] Added semantic and keyboard accessible check all button for a groups of consecutive selectable rows in the diff - #18201",
+      "[Improved] Prevent upgrading from macOS 10.13 and 10.14 as soon to be unsupported - #18316",
+      "[Improved] Update banners will only dismiss when closing with the dismiss button - #18319",
+      "[Improved] Add the \"link\" role to the \"Open pull request\" button in tutorial sidebar - #18245"
+    ],
+    "3.3.12-beta3": [
+      "[Fixed] Bring back support for macOS 10.13 and 10.14 and prevent upgrading from them - #18316",
+      "[Fixed] Added announcing the number of results to the diff search via screen readers - #18306",
+      "[Improved] Update banners will only dismiss when closing with the dismiss button - #18319"
+    ],
+    "3.3.12-beta2": [
+      "[Improved] The pull request check run popover is now keyboard accessible - #18276",
+      "[Improved] The pull request check run popover button is now keyboard accessible - #18268",
+      "[Improved] Add the aria-label attribute to our markdown iframes to clarify their purpose to users of screen readers in browse mode.  - #18277",
+      "[Improved] Add support for newer versions of Alacritty shell - #16614. Thanks @lhvy!",
+      "[Improved] Upgrade embedded Git to v2.43.3 on macOS, and to v2.43.0.windows.1 on Windows, and Git LFS to v3.5.1 - #18292",
+      "[Improved] Git errors due to bad config values are surfaced in the UI - #18230"
+    ],
+    "3.3.12-beta1": [
+      "[Fixed] In the changes diff, groups of two rows that represent one line number change have a check all control - #18232",
+      "[Fixed] Copying lines in side by side diffs does not add new lines between each line when pasted - #18249",
+      "[Fixed] On Windows, PATH environment variable with values longer than 1024 are not truncated - #18244",
+      "[Fixed] The last lines in diffs are visible when warning banners are displayed - #18237",
+      "[Improved] Add the \"link\" role to the \"Open pull request\" button in tutorial sidebar - #18245",
+      "[Improved] Upgrade to Electron v28.2.3 - #18185"
+    ],
+    "3.3.11": [
+      "[Fixed] Copying lines in the side by side diff does not add new lines between each line when pasted. - #18249"
+    ],
+    "3.3.10": [
+      "[Fixed] The last lines in diffs are visible when warning banners are displayed - #18237",
+      "[Fixed] Ignore a file's parent directories on Windows. - #1203"
+    ],
+    "3.3.10-beta1": [
+      "[Added] Added visible and semantic check all button for a group of consecutive selectable rows in the diff - #18201",
+      "[Fixed] Ignore a file's parent directories on Windows - #18206",
+      "[Improved] Add a setting for visibility of diff check marks when committing - #18227",
+      "[Improved] Add support for toggling link underlines globally - #18035"
+    ],
+    "3.3.9": [
+      "[Fixed] The line number inclusion controls are semantic checkboxes and are keyboard accessible - #18064",
+      "[Fixed] Copying commit SHAs from submodule diffs is keyboard accessible - #18124",
+      "[Fixed] Show avatars of bot accounts such as dependabot - #12766",
+      "[Fixed] Focus outline is visible on the diff - #18086",
+      "[Fixed] Selecting or deselecting lines in a diff by dragging the mouse now scrolls the contents as needed - #17673",
+      "[Fixed] Last line of diffs can be selected when the file didn't have a new line at the end - #18081",
+      "[Fixed] Promote line endings change warning from icon to a banner, improving its accessibility - #18084",
+      "[Fixed] Amending a commit in non-GitHub repositories restores the commit message - #18061",
+      "[Fixed] The merge dialog submit button is available when conflicts are detected - #18037",
+      "[Fixed] Avatars are once again loading for GitHub Enterprise Server users - #18034",
+      "[Fixed] Lists scroll and render as expected when scrolling by dragging the scrollbar on Windows - #18012",
+      "[Fixed] External editor or shell failure error will open to integration settings - #18021. Thanks @yasuking0304!",
+      "[Improved] Add `pyi` to syntax highlighting - #18141. Thanks @pLeBlanc93!",
+      "[Improved] Syntax highlighting now supports .cmake, .cxx, .hh, .hxx, and .xsd files - #17503. Thanks @DylanDevelops!",
+      "[Improved] Apply Markdown highlighting to .mdx files - #18040. Thanks @bentookey-yotta!",
+      "[Improved] Implemented folder ignore with all parent directories - #1203. Thanks @masecla22!"
+    ],
     "3.3.9-beta2": [
       "[Fixed] The line number inclusion controls are semantic checkboxes and are keyboard accessible - #18064",
       "[Fixed] Copying commit SHAs from submodule diffs is keyboard accessible - #18124",

@@ -70,7 +70,7 @@ export function enableUpdateFromEmulatedX64ToARM64(): boolean {
 
 /** Should we allow resetting to a previous commit? */
 export function enableResetToCommit(): boolean {
-  return enableDevelopmentFeatures()
+  return enableBetaFeatures()
 }
 
 /** Should we allow checking out a single commit? */
@@ -94,10 +94,6 @@ export function enableMoveStash(): boolean {
 
 export const enableCustomGitUserAgent = enableBetaFeatures
 
-export function enableSectionList(): boolean {
-  return true
-}
-
 export const enableRepoRulesBeta = () => true
 
 export const enableCommitDetailsHeaderExpansion = () => true
@@ -105,3 +101,6 @@ export const enableCommitDetailsHeaderExpansion = () => true
 export const enableDiffCheckMarksAndLinkUnderlines = enableBetaFeatures
 
 export const enableDiffCheckMarks = enableDiffCheckMarksAndLinkUnderlines
+export const enableGroupDiffCheckmarks = enableDiffCheckMarksAndLinkUnderlines
+
+export const enableLinkUnderlines = enableDiffCheckMarksAndLinkUnderlines

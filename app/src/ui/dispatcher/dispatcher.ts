@@ -2031,7 +2031,7 @@ export class Dispatcher {
    *
    * This is used only on macOS.
    */
-  public async installCLI() {
+  public async installDarwinCLI() {
     try {
       await installCLI()
 
@@ -2041,14 +2041,6 @@ export class Dispatcher {
 
       this.postError(e)
     }
-  }
-
-  /** Prompt the user to authenticate for a generic git server. */
-  public promptForGenericGitAuthentication(
-    repository: Repository | CloningRepository,
-    retry: RetryAction
-  ): Promise<void> {
-    return this.appStore.promptForGenericGitAuthentication(repository, retry)
   }
 
   /** Save the generic git credentials. */
@@ -3912,5 +3904,13 @@ export class Dispatcher {
     checks: ReadonlyArray<IRefCheck>
   ) {
     this.appStore.onChecksFailedNotification(repository, pullRequest, checks)
+  }
+
+  public setUnderlineLinksSetting(underlineLinks: boolean) {
+    return this.appStore._updateUnderlineLinks(underlineLinks)
+  }
+
+  public setDiffCheckMarksSetting(diffCheckMarks: boolean) {
+    return this.appStore._updateShowDiffCheckMarks(diffCheckMarks)
   }
 }
